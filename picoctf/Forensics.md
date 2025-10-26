@@ -7,7 +7,7 @@
 - Looking at the first hint, it said "How did pictures from the moon landing get sent back to Earth?", So I googled the entire thing on google. 
 - After some websites, I opened up a wikipedia with the title "Apollo 11 missing tapes", It talked about a transmission method called `SSTV` which is Slow-scan television which was used to transmit images from moon to earth.
 - I searched SSTV image decoder on google and uploaded the given `wav` file on `sstv-decoder.mathieurenaud.fr`, through that, I was able to recover this image.
-	![decoded-image.png](images/decode-image.png)
+	![decoded-image.png](images/decoded-image.png)
 - This image had the flag upside-down.
 	![sstvflag.png](images/sstvflag.png)
 
