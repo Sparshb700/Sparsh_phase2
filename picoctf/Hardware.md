@@ -22,3 +22,4 @@ FCSC{b1dee4eeadf6c4e60aeb142b0b486344e64b12b40d1046de95c89ba5e23a9925}
 - I learnt what are `.sal` extension files
 - UART signals are used for serial data communication between devices.
 - I learnt the usage of the `Saleae Logic` software and how it used to analyze signals.
+- Youtube link: https://www.youtube.com/watch?v=jocVpFqlpOo
