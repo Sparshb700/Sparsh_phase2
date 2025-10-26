@@ -54,6 +54,11 @@ Using -iter or -pbkdf2 would be better.
 picoCTF{su((3ss_(r@ck1ng_r3@_da099d93}
 ```
 ## Flag:
-```css
+```
 picoCTF{su((3ss_(r@ck1ng_r3@_da099d93}
 ```
+## Notes and Concepts Learnt:
+- I learnt how RSA encryption works.
+- Chosen Plaintext Attack is an attack where the attacker can an attacker can chose plaintexts and get the corresponding ciphertexts. This allows the attacker to analyze the algorithm and find a vulnerability to exploit
+- Reference Used: `https://crypto.stackexchange.com/questions/2323/how-does-a-chosen-plaintext-attack-on-rsa-work`
+
