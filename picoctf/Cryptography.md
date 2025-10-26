@@ -62,3 +62,31 @@ picoCTF{su((3ss_(r@ck1ng_r3@_da099d93}
 - Chosen Plaintext Attack is an attack where the attacker can an attacker can chose plaintexts and get the corresponding ciphertexts. This allows the attacker to analyze the algorithm and find a vulnerability to exploit
 - Reference Used: `https://crypto.stackexchange.com/questions/2323/how-does-a-chosen-plaintext-attack-on-rsa-work`
 
+# 3. miniRSA
+> Let's decrypt this: ciphertext? Something seems a bit small.
+
+Content of ciphertext:
+```
+N: 29331922499794985782735976045591164936683059380558950386560160105740343201513369939006307531165922708949619162698623675349030430859547825708994708321803705309459438099340427770580064400911431856656901982789948285309956111848686906152664473350940486507451771223435835260168971210087470894448460745593956840586530527915802541450092946574694809584880896601317519794442862977471129319781313161842056501715040555964011899589002863730868679527184420789010551475067862907739054966183120621407246398518098981106431219207697870293412176440482900183550467375190239898455201170831410460483829448603477361305838743852756938687673
+e: 3
+
+ciphertext (c): 2205316413931134031074603746928247799030155221252519872649649212867614751848436763801274360463406171277838056821437115883619169702963504606017565783537203207707757768473109845162808575425972525116337319108047893250549462147185741761825125
+```
+## Solve:
+
+- Due to `RSA Oracle` challenge, I already had a pretty solid idea regarding what `N`, `e`, `C` is.
+  Here N -> Shared Key
+  e -> Public Exponent
+  C -> Ciphertext
+- I opened up `dcode.fr`, selected the `rsa-cipher` and inputted the values provided in the challenge 
+![dcodefr.png](images/dcodefr.png)
+	Through this I was able to get the flag very easily.
+
+## Flag:
+```
+picoCTF{n33d_a_lArg3r_e_606ce004}
+```
+
+## Notes and Concepts Learnt:
+- `dcode.fr` is a very helpful tool in the field of cryptography and has a variety of different ciphers through which you can either encrypt or decrypt.
+
