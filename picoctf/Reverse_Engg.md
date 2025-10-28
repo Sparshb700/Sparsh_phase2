@@ -64,4 +64,101 @@ picoCTF{549698}
 
 
 
+# 3. Vault Door 3
+>This vault uses for-loops and byte arrays. The source code for this vault is here: [VaultDoor3.java](https://jupiter.challenges.picoctf.org/static/a4018cec1446761cb2e8cce05db925fa/VaultDoor3.java)
+
+## Solve:
+
+- Opening up the java file provided, I could see how this program asks for the password to be inputted.
+
+Contents of `VaultDoor3.java`
+```java
+import java.util.*;
+
+class VaultDoor3 {
+    public static void main(String args[]) {
+        VaultDoor3 vaultDoor = new VaultDoor3();
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter vault password: ");
+        String userInput = scanner.next();
+        String input = userInput.substring("picoCTF{".length(),userInput.length()-1);
+        if (vaultDoor.checkPassword(input)) {
+            System.out.println("Access granted.");
+        } else {
+            System.out.println("Access denied!");
+        }
+    }
+
+    // Our security monitoring team has noticed some intrusions on some of the
+    // less secure doors. Dr. Evil has asked me specifically to build a stronger
+    // vault door to protect his Doomsday plans. I just *know* this door will
+    // keep all of those nosy agents out of our business. Mwa ha!
+    //
+    // -Minion #2671
+    public boolean checkPassword(String password) {
+        if (password.length() != 32) {
+            return false;
+        }
+        char[] buffer = new char[32];
+        int i;
+        for (i=0; i<8; i++) {
+            buffer[i] = password.charAt(i);
+        }
+        for (; i<16; i++) {
+            buffer[i] = password.charAt(23-i);
+        }
+        for (; i<32; i+=2) {
+            buffer[i] = password.charAt(46-i);
+        }
+        for (i=31; i>=17; i-=2) {
+            buffer[i] = password.charAt(i);
+        }
+        String s = new String(buffer);
+        return s.equals("jU5t_a_sna_3lpm12g94c_u_4_m7ra41");
+    }
+}
+```
+- Here the string `jU5t_a_sna_3lpm12g94c_u_4_m7ra41` was to be compared with the user input put into the program to get into the `Vault`. But before that check, the user input goes through a series of changes that modified it completely.
+- It changed the input like so -
+	- The first 8 characters were left as it is.
+	- Then next 8 characters were reversed
+	- From characters 16 to 32, the characters were reversed with step of two.
+	- Then the rest of the characters from 31 to 17 were also reversed the same way with the step value of two.
+- To crack the real password, I created this python script that mimics the source code
+
+Contents of `solver.py`
+```python
+vault = "jU5t_a_sna_3lpm12g94c_u_4_m7ra41"
+passwd = ["" for x in range(32)]
+
+for i in range(0, 8):
+    passwd.insert(i, vault[i])
+
+for i in range(8, 16):
+    passwd.insert(i, vault[23-i])
+
+for i in range(16, 32, 2):
+    passwd.insert(i, vault[46-i])
+
+for i in range(31, 16, -2):
+    passwd.insert(i, vault[i])
+
+decoded = "".join(passwd)
+
+print("Flag: picoCTF{"+ decoded + "}")
+```
+
+- Running my program, I got the following output:`
+```zsh
+sparsh@LAPTOP-F80QI4V2 ~/ctf2 $ python3 solver.py
+Flag: picoCTF{jU5t_a_s1mpl3_an4gr4m_4_u_c79a21}
+```
+## Flag:
+```
+picoCTF{jU5t_a_s1mpl3_an4gr4m_4_u_c79a21}
+```
+
+
+## Notes and Concepts Learnt:
+- I already had basic knowledge of both Python and Java, so this challenge was on the easier side.
 
