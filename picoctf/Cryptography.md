@@ -62,6 +62,138 @@ picoCTF{su((3ss_(r@ck1ng_r3@_da099d93}
 - Chosen Plaintext Attack is an attack where the attacker can an attacker can chose plaintexts and get the corresponding ciphertexts. This allows the attacker to analyze the algorithm and find a vulnerability to exploit
 - Reference Used: `https://crypto.stackexchange.com/questions/2323/how-does-a-chosen-plaintext-attack-on-rsa-work`
 
+# 2. Custom Encryption
+>Can you get sense of this code file and write the function that will decode the given encrypted file content. Find the encrypted file here [flag_info](https://artifacts.picoctf.net/c_titan/16/enc_flag) and [code file](https://artifacts.picoctf.net/c_titan/16/custom_encryption.py) might be good to analyze and get the flag.
+
+Contents of `custom_encryption.py`:
+```python
+from random import randint
+import sys
+
+
+def generator(g, x, p):
+    return pow(g, x) % p
+
+
+def encrypt(plaintext, key):
+    cipher = []
+    for char in plaintext:
+        cipher.append(((ord(char) * key*311)))
+    return cipher
+
+
+def is_prime(p):
+    v = 0
+    for i in range(2, p + 1):
+        if p % i == 0:
+            v = v + 1
+    if v > 1:
+        return False
+    else:
+        return True
+
+
+def dynamic_xor_encrypt(plaintext, text_key):
+    cipher_text = ""
+    key_length = len(text_key)
+    for i, char in enumerate(plaintext[::-1]):
+        key_char = text_key[i % key_length]
+        encrypted_char = chr(ord(char) ^ ord(key_char))
+        cipher_text += encrypted_char
+    return cipher_text
+
+
+def test(plain_text, text_key):
+    p = 97
+    g = 31
+    if not is_prime(p) and not is_prime(g):
+        print("Enter prime numbers")
+        return
+    a = randint(p-10, p)
+    b = randint(g-10, g)
+    print(f"a = {a}")
+    print(f"b = {b}")
+    u = generator(g, a, p)
+    v = generator(g, b, p)
+    key = generator(v, a, p)
+    b_key = generator(u, b, p)
+    shared_key = None
+    if key == b_key:
+        shared_key = key
+    else:
+        print("Invalid key")
+        return
+    semi_cipher = dynamic_xor_encrypt(plain_text, text_key)
+    cipher = encrypt(semi_cipher, shared_key)
+    print(f'cipher is: {cipher}')
+
+
+if __name__ == "__main__":
+    message = sys.argv[1]
+    test(message, "trudeau")
+```
+
+contents of `enc_flag` :
+```
+a = 97
+b = 22
+cipher is: [151146, 1158786, 1276344, 1360314, 1427490, 1377108, 1074816, 1074816, 386262, 705348, 0, 1393902, 352674, 83970, 1141992, 0, 369468, 1444284, 16794, 1041228, 403056, 453438, 100764, 100764, 285498, 100764, 436644, 856494, 537408, 822906, 436644, 117558, 201528, 285498]
+```
+## Solve:
+- Looking at the code for the first time, it looked very complex.
+- Breaking it down:
+	- First in the main function, two numbers p and g are defined, using these two more numbers a which is a random number between (p-10, p) and b which is a random number between (g-10 , g)
+	- These a and b are provided to me through the `enc_flag` file, `a=97, b=22`.
+	- Now `u`, `v`, `key` and `b_key` are calculated via the `generator` function which takes three parameters and excise them with a RSA sort of algorithm `pow(g, x) % p`.
+		- `u` = 31
+		- `v` = 54
+		- `key` = 54
+		- `b_key` = 54
+	- So here `shared key` is 54
+- After this the plain text is XORed with the test key `tradeau`, after that it is passed through the `encrypt` function where each string's each character's ascii  is multiplied by the shared key and 311.
+- Lastly, it generates list of decimal values that are encrypted form of the plain text.
+- I created a python script to decrypt this data, it mimics the original file, just reverts all the steps one by one.
+```python
+
+encrypted_nums = [151146, 1158786, 1276344, 1360314, 1427490, 1377108, 1074816, 1074816, 386262, 705348, 0, 1393902, 352674, 83970, 1141992, 0, 369468, 1444284, 16794, 1041228, 403056, 453438, 100764, 100764, 285498, 100764, 436644, 856494, 537408, 822906, 436644, 117558, 201528, 285498]
+
+xor_text = []
+xor_ascii_number = []
+xor_ascii_bin = []
+
+divisor = 311 * 54
+for i in range(len(encrypted_nums)):
+    y = chr(int(encrypted_nums[i]/divisor))
+    xor_ascii_number.append(int(encrypted_nums[i]/divisor))
+    xor_text.append(y)
+
+
+semi_ciphertext = "".join(xor_text)
+
+
+plaintext = ""
+text_key = "trudeau"
+key_length = len(text_key)
+for i, char in enumerate(semi_ciphertext):
+    key_char = text_key[i % key_length]
+    decrypted_char = chr(ord(char) ^ ord(key_char))
+    plaintext += decrypted_char
+print(plaintext[::-1])
+```
+- I got the following output:
+```zsh
+sparsh@LAPTOP-F80QI4V2 ~/ctf2/custom $ python3 solver.py
+picoCTF{custom_d2cr0pt6d_e4530597}
+```
+
+## Flag:
+```
+picoCTF{custom_d2cr0pt6d_e4530597}
+```
+
+## Notes and Concepts Learnt:
+- This question was a great practice on creating a decrypt script when you have the encrypt algorithm.
+
 # 3. miniRSA
 > Let's decrypt this: ciphertext? Something seems a bit small.
 
