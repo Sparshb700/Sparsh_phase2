@@ -1,3 +1,47 @@
+# 1. Trivial Flag Transfer Protocol
+> Figure out how they moved the [flag](https://mercury.picoctf.net/static/cc6074838ede2edf9f805fd2b58bdc58/tftp.pcapng).
+
+## Solve:
+- Having some prior experience on working with `pcapng` or packet capture files, I fired up Wireshark only to realize I am on the wrong version of the software.
+- After making no progress, I downloaded the older version of Wireshark and loaded the capture file in it.
+- After some reading around `TFTP` or Trivial File Transfer Protocol, I got to know how it is used to transfer files between clients and servers. I read about how to extract files from the packet capture file.
+- The path to exporting files was-
+	- Files --> Export Objects --> TFTP --> Save All
+- Through this I got the following files:
+
+	![tftp.png](images/tftp.png)
+
+- Opening up `instructions.txt`:
+	- The contents were `GSGCQBRFAGRAPELCGBHEGENSSVPFBJRZHFGQVFTHVFRBHESYNTGENAFSRE.SVTHERBHGNJNLGBUVQRGURSYNTNAQVJVYYPURPXONPXSBEGURCYNA
+	- This was ROT13 Cipher as identified by our trusty friend `dcode.fr`, and translated to `TFTP DOESNT ENCRYPT OUR TRAFFIC SO WE MUST DISGUISE OUR FLAG TRANSFER.FIGURE OUT A WAY TO HIDE THE FLAG AND I WILL CHECK BACK FOR THEPLAN`
+- This pointed to `plan`
+	- The contents were `VHFRQGURCEBTENZNAQUVQVGJVGU-QHRQVYVTRAPR.PURPXBHGGURCUBGBF`
+		- The contents this time also were encrypted in ROT13, transcribing I got, `I USED THE PROGRAM AND HID IT WITH-DUE DILIGENCE.CHECK OUT THE PHOTOS`
+- At the images, I used the `steghide` tool that is used hide or recover hidden data from images and audio files. The `DUEDILIGENCE` seemed a little suspicious so I thought it could be a passphrase, so using `steghide extract -sf`, I tried extracting data from each image one by one
+```zsh
+sparsh@LAPTOP-F80QI4V2 /mnt/c/Users/Sparsh Bansal/Downloads $ steghide extract -sf picture1.bmp
+Enter passphrase:
+steghide: could not extract any data with that passphrase!
+sparsh@LAPTOP-F80QI4V2 /mnt/c/Users/Sparsh Bansal/Downloads $ steghide extract -sf picture2.bmp
+Enter passphrase:
+steghide: could not extract any data with that passphrase!
+sparsh@LAPTOP-F80QI4V2 /mnt/c/Users/Sparsh Bansal/Downloads $ steghide extract -sf picture3.bmp
+Enter passphrase:
+wrote extracted data to "flag.txt".
+```
+- On the third file, I got a file "flag.txt" which contained the flag.
+
+## Flag:
+```
+picoCTF{h1dd3n_1n_pLa1n_51GHT_18375919}
+```
+
+## Notes and Concepts Learnt:
+- I learnt how to extract data from TFTP using Wireshark.
+- TFTP is a File transferring protocol used between servers and client.
+- Helped with Wireshark: https://www.youtube.com/watch?v=2x5O76f6iLA
+
+
 # 2. tunn3l_v1s10n
 ## Solve:
 - On downloading the file, I first used the `file` command to see the what sort of file it was,

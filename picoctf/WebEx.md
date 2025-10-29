@@ -1,3 +1,42 @@
+# 1. Web Gauntlet
+>Can you beat the filters? Log in as admin http://shape-facility.picoctf.net:54186/ http://shape-facility.picoctf.net:54186/filter.php
+
+## Solve:
+- I was given two website ports, entering the first one I got this
+	
+	![web1.png](images/web1.png)
+- Enter any redundant data, this was shown on the top of the webpage: `SELECT * FROM users WHERE username='admin ' AND password='admin123'`
+- I had read about SQL Injections before, so I searched up SQL injections and landed on `portswigger.net`. For the first round I found this-
+	
+	![web0.png](images/web0.png)
+- Using that, I was able to easily solve the First round, I just put a delimiter `'` and `--` after `admin` in the username, what this did was it first delimited the username field and `--` was used to comment out the `password` field which meant any password could be used.
+- Now on to the second round, filtered words were `Round2: or and like = --`.
+	
+	![web2.png](images/web2.png)
+- Here `--` was filtered out so I used `/*` to comment out the `password` field.
+	
+	- ![web3.png](images/web3.png)
+-  This time the filters were `Round3: or and = like > < --`
+- Again the same injection could be used, moving to round 4, here the filters were `Round4: or and = like > < -- admin`
+- Here the admin key was blacklisted so I read around the website and was able to locate another injection.
+- Basically I ran the same `/*` but to use the admin key word I used `||`, `ad||min` but that didn't seem to work at first, I looked around more and figured that I put the delimiter at the wrong place, finally I used this `admi'||'n'/*` which worked and I moved on to round 5.
+- Here only the union keyword was banned, so the same injection worked from round 4.
+- After round 5 I was shown this,
+	
+	- ![web4.png](images/web4.png)
+- Checking out `filter.php`, I got the flag.
+
+## Flag:
+```
+picoCTF{y0u_m4d3_1t_79a0ddc6}
+```
+
+## Notes and Concepts Learnt:
+- I learnt how to perform SQL injections
+- This challenged taught me how vulnerable SQL code can be.
+- Resource used: https://portswigger.net/web-security/sql-injection
+
+
 ## 2. SSTI1
 
 >I made a cool website where you can announce whatever you want! Try it out! I heard templating is a cool and modular way to build web apps! Check out my website [here](http://rescued-float.picoctf.net:60292/)!
