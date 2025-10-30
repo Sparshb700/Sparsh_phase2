@@ -59,10 +59,103 @@ picoCTF{549698}
 ## Notes:
 - Under `gdb`, `disassemble` or `disas` command can be used to look at the assembly code of a specific function
 
-
 # 2. ARMssembly 1
+> For what argument does this program print `win` with variables `58`, `2` and `3`? File: [chall_1.S](https://mercury.picoctf.net/static/1c8d50e39cf00d144e6a72119f68c16c/chall_1.S) Flag format: picoCTF{XXXXXXXX} -> (hex, lowercase, no 0x, and 32 bits. ex. 5614267 would be picoCTF{0055aabb})
 
+Contents of `chall_1.S`
+```
+        .arch armv8-a
+        .file   "chall_1.c"
+        .text
+        .align  2
+        .global func
+        .type   func, %function
+func:
+        sub     sp, sp, #32
+        str     w0, [sp, 12]
+        mov     w0, 58
+        str     w0, [sp, 16]
+        mov     w0, 2
+        str     w0, [sp, 20]
+        mov     w0, 3
+        str     w0, [sp, 24]
+        ldr     w0, [sp, 20]
+        ldr     w1, [sp, 16]
+        lsl     w0, w1, w0
+        str     w0, [sp, 28]
+        ldr     w1, [sp, 28]
+        ldr     w0, [sp, 24]
+        sdiv    w0, w1, w0
+        str     w0, [sp, 28]
+        ldr     w1, [sp, 28]
+        ldr     w0, [sp, 12]
+        sub     w0, w1, w0
+        str     w0, [sp, 28]
+        ldr     w0, [sp, 28]
+        add     sp, sp, 32
+        ret
+        .size   func, .-func
+        .section        .rodata
+        .align  3
+.LC0:
+        .string "You win!"
+        .align  3
+.LC1:
+        .string "You Lose :("
+        .text
+        .align  2
+        .global main
+        .type   main, %function
+main:
+        stp     x29, x30, [sp, -48]!
+        add     x29, sp, 0
+        str     w0, [x29, 28]
+        str     x1, [x29, 16]
+        ldr     x0, [x29, 16]
+        add     x0, x0, 8
+        ldr     x0, [x0]
+        bl      atoi
+        str     w0, [x29, 44]
+        ldr     w0, [x29, 44]
+        bl      func
+        cmp     w0, 0
+        bne     .L4
+        adrp    x0, .LC0
+        add     x0, x0, :lo12:.LC0
+        bl      puts
+        b       .L6
+.L4:
+        adrp    x0, .LC1
+        add     x0, x0, :lo12:.LC1
+        bl      puts
+.L6:
+        nop
+        ldp     x29, x30, [sp], 48
+        ret
+        .size   main, .-main
+        .ident  "GCC: (Ubuntu/Linaro 7.5.0-3ubuntu1~18.04) 7.5.0"
+        .section        .note.GNU-stack,"",@progbits
+```
+## Solve:
+- The only way I could do this problem was by learning basic ARM Assembly code, so I referred to this youtube channel called `LaurieWired`, through her 11 video series I could understand basic ARM assembly
+- The first command ` sub     sp, sp, #32` creates a stack of 32 bytes where your data could be stored.
+- Next it stores the user input at the 12th position in the stack.
+- After that it again loads the `w0` register and inputs the value `58` at the 16th position
+- Then values `2` and `3` are inputted at position 20 and 24 respectively.
+- After that the value `58` is left shifted (using `lsl` command) by 2 positions, which means it gets multiplied by 2^2 , the resulting value being `232` and this gets stored at 28th position.
+- Then this gets divided by the value `3` which results in almost `77`.
+- At the end of `func`, the value `77` is subtracted by the input value and finally gets stored.
+- Then finally it checks in the `main` function if the final value is equal to 0 or not, and that results in the `YOU WIN` condition. 
+- That means the value should be `77` only, converting it to hex I got `4D`.
+- Final answer should be picoCTF{0000004d}
+## Flag:
+```
+picoCTF{0000004d}
+```
 
+## Notes and Concepts Learnt:
+- I learnt basic ARM Assembly structure and how its read and written.
+- Resource used for learning: https://www.youtube.com/playlist?list=PLn_It163He32Ujm-l_czgEBhbJjOUgFhg
 
 # 3. Vault Door 3
 >This vault uses for-loops and byte arrays. The source code for this vault is here: [VaultDoor3.java](https://jupiter.challenges.picoctf.org/static/a4018cec1446761cb2e8cce05db925fa/VaultDoor3.java)
