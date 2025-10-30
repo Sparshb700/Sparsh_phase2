@@ -731,7 +731,7 @@ do {
 ```
 - Decrypting using the cipher key `0xA5` on `dcode.fr` with XOR Cipher, I got the following output,
 	
-	![harddcode.png](images/hardcode.png)
+	![harddcode.png](images/harddcode.png)
 ## Flag:
 ```
 TFCCTF{Th1s_1s_som3_s1mpl3_4rdu1no_f1rmw4re}
