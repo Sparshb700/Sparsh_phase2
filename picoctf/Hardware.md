@@ -1,3 +1,24 @@
+# 1.iq test
+>let your input x = 30478191278. 
+>wrap your answer with nite{ } for the flag.
+>As an example, entering x = 34359738368 gives (y0, ..., y11), so the flag would be nite{010000000011}.
+
+Given Image `iqtest.png`
+![iqtest.png](images/iqtest.png)
+## Solve:
+- First I converted the value `30478191278` into binary and got this `11100011000101001000100101010101110`, I added an extra 0 at the beginning to fit it into the entire 36 inputs.
+- Then I took a printout and solved the entire circuit manually :(
+	
+	![iqtestsolve.jpg](images/iqtestsolve.jpg)
+- I got `100010011000` as the output
+
+## Flag:
+```
+nite{100010011000}
+```
+## Notes and Concepts Learnt:
+- This challenge just required basic knowledge of gates to solve.
+- Only could be done manually, no script can be made.
 
 # 2. I like Logic
 >i like logic and i like files, apparently, they have something in common, what should my next step be.
