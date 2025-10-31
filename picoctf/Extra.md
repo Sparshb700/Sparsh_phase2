@@ -512,3 +512,66 @@ picoCTF{1t_w4sn7_h4rd_unr4v3l1n9_th3_m0b1l3_c0d3
 
 ## Notes and Concepts Learnt:
 - I learnt how to decompile java applications and learnt where crucial data is located.
+
+
+# 6. packer
+>Reverse this linux executable? [binary](https://artifacts.picoctf.net/c_titan/103/out)
+>(rev-eng-medium)
+## Solve:
+- The first thing I did was to launch the challenge
+```zsh
+sparsh@LAPTOP-F80QI4V2 ~/ctf/packer $ ./out
+Enter the password to unlock this file: 120
+You entered: 120
+
+Access denied
+```
+- That didn't seem to work, the next two thing I wanted to try was `strings` and `objdump`, so I could maybe get some data out of it. `objdump` gave no result at at all.
+```
+sparsh@LAPTOP-F80QI4V2 ~/ctf/packer $ objdump -d out
+
+out:     file format elf64-x86-64
+```
+- So I looked at the strings, at the last only one string looked useful which was `UPX`
+```zsh
+sparsh@LAPTOP-F80QI4V2 ~/ctf/packer $ strings out
+...
+n`I C
+ot      +da$
+.bssh
+?p! _
+H_db
+UPX!
+UPX!
+```
+- I searched it up on the net and found that `UPX` is `Ultimate Packer for eXecutables` and installed `upx` on my `wsl` install.
+```zsh
+sparsh@LAPTOP-F80QI4V2 ~/ctf/packer $ sudo apt install upx
+```
+- Then I used the command to decompile it into normal executable.
+```zsh
+sparsh@LAPTOP-F80QI4V2 ~/ctf/packer $ upx -d out
+```
+- Again I used `strings` again to check if some string has the contents `flag`.
+```zsh
+sparsh@LAPTOP-F80QI4V2 ~/ctf/packer $ strings out | grep "flag"
+Password correct, please see flag: 7069636f4354467b5539585f556e5034636b314e365f42316e34526933535f36666639363465667d
+(mode_flags & PRINTF_FORTIFY) != 0
+WARNING: Unsupported flag value(s) of 0x%x in DT_FLAGS_1.
+version == NULL || !(flags & DL_LOOKUP_RETURN_NEWEST)
+flag.c
+_dl_x86_hwcap_flags
+_dl_stack_flags
+```
+- Here I found the flag encoded in some cipher and put it in `dcode.fr` when I found out was `ASCII` code. Then I decrypted it and found the flag.
+	
+	![packer.png](images/packer.png)
+## Flag:
+```
+picoCTF{U9X_UnP4ck1N6_B1n4Ri3S_6ff964ef}
+```
+
+## Notes and Concepts Learnt:
+- I learnt what are `UPX` executables and how they work.
+- I learnt how to decompile UPX executables.
+
