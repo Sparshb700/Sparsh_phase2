@@ -1,4 +1,4 @@
-# Gates of Mayhem
+# 1. Gates of Mayhem
 >iqtest but its on steriods and you have weird aah inputs aswell.
 
 >Two files were provided, `input_sequence.csv` and `gates_of_mayhem.pdf`
@@ -67,3 +67,38 @@ citadel{1_l0v3_t0_3xpl01t_l0g1c}
 ## Notes and Concepts Learnt:
 - I learnt how BJT `npn` transistors work and how to makes gates with them.
 - I learnt how to read schematics. 
+
+
+# 2. I Like Logic More
+>idk man, i feel like microsd cards are a thing of the past.
+
+## Solve:
+- Like one of  the previous hardware challenge, I was provided with a `.sal` file which I opened up in the `Saleae Logic` software.
+
+	![illm1.png](images/illm1.png)
+- Looking at the `README`, I tried searching for the protocol used by SD cards, and I landed on this website: https://www.prodigytechno.com/spi-protocol
+- I found it is SPI protocol which has 4 channels.
+	- `MISO`- Master In Slave Out
+	- `MOSI`- Master Out Slave In
+	- Clock
+	- Clock Enable
+- Now the problem was to locate which channel was which,
+	- The channel which repetitive and clean was supposed to be the Clock
+	- The Enable is the one which'll go low before clock start
+	- MOSI and MISO I tried to interchange.
+- After getting some good ascii characters, I scrolled and scrolled and got this
+    - MOSI -> Channel 0
+    - MOSI -> Channel 1
+    - Clock -> Channel 3
+    - Enable -> Channel 2
+
+	![illm2.png](images/illm2.png)
+- Using this I was able to get the flag
+
+## Flag:
+```
+HTB{unp2073c73d_532141_p2070c015_0n_53cu23_d3v1c35}
+```
+
+## Notes and Concepts Learnt:
+- I learnt how SPI protocol is configured and what are the different channels it is operated on.
