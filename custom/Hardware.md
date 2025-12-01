@@ -102,3 +102,62 @@ HTB{unp2073c73d_532141_p2070c015_0n_53cu23_d3v1c35}
 
 ## Notes and Concepts Learnt:
 - I learnt how SPI protocol is configured and what are the different channels it is operated on.
+
+# 3. Speed Thrills But Kills
+>i recently got involved in a hit and run case in pune, that kids porsche was going wayy too fast, if only i knew what the VIN of the car was :(
+
+> One `.sal` file was also provided.
+
+## Solve:
+- Looking at the description provided, I search what is `VIN` and how it is related to cars.
+	- Through google, I found that, `VIN` is `Vehicle Identification Number` which is a 17 character code, that serves as the car's fingerprint used to identify it and its history.
+- Searching through the Wikipedia page, I was able to locate this section,
+	
+	![stbk1.png](images/stbk1.png)
+-  This said that the car's VIN could be digitally read with `OBD-II` which is `On-Board Diagnostics`, and looking at its signal protocols, I was shown a lot of protocols through which I could analyze the signal. 
+- Looking at the description of them all, I could see that the `CAN` protocol was a must for vehicles after the year 2008.
+	
+	![stbk2.png](images/stbk2.png)
+- So I opened up the signal file in the `Saleae Logic` software.
+- First to analyze the signal using the `CAN` analyzer, I had to find the bit rate or the `baud` rate of the signal,
+	- Searching on google, I found that common baud rates for `CAN` were `125 kbit/s`, `125 kbit/s`, `250 kbit/s`,  `500 kbit/s` and `1000 kbit/s`
+	- Trying to use them one by one, I could only receive data on the `125000 kbit/s` baud rate.
+	
+	![stbk3.png](images/stbk3.png)
+- The received data I got, I exported as `csv` data and tried reading it through python. This was the `csv` data structure.
+```
+name,start_time,duration,"data","identifier","num_data_bytes","crc"
+```
+
+```python
+import csv  
+  
+decoded_message = ""  
+with open("data.csv", encoding="utf-8") as file:  
+    data = csv.reader(file)  
+    for line in data:  
+        decoded_message += line[3]  
+  
+print(decoded_message)
+```
+- This is the output I received-
+	
+	![stbk4.png](images/stbk4.png)
+	- It was very long and had a lot of escape characters (`\0`)
+- I used python to remove all the escape characters and then ran the program again and in the midst of unwanted characters, I was able to locate the flag.
+	
+	![stbk5.png](images/stbk5.png)
+```
+...LòM.¨.HTB{v1n_c42_h4ck1n9_15_1337!*0^}.X...
+```
+
+## Flag:
+```
+HTB{v1n_c42_h4ck1n9_15_1337!*0^}
+```
+
+## Notes and Concept Learnt:
+- I learnt about the `CAN` protocol which is `Control Area Network` bus, designed to enable efficient communication primarily between electronic control units.
+- Baud rate for `CAN` is usually `125`, `250`, `500` or `1000` kbit/s.
+- I learnt how are `CAN` signals are decoded and can be used to discover hidden data.
+- I learnt how to export data table from `Saleae Logic` and analyze them using python.
