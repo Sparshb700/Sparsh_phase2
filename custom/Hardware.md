@@ -161,3 +161,73 @@ HTB{v1n_c42_h4ck1n9_15_1337!*0^}
 - Baud rate for `CAN` is usually `125`, `250`, `500` or `1000` kbit/s.
 - I learnt how are `CAN` signals are decoded and can be used to discover hidden data.
 - I learnt how to export data table from `Saleae Logic` and analyze them using python.
+
+
+
+# 4. Formwear
+
+> this is most definitely going to ring some bells for those who attended the "router hijacking" workshop L0L
+
+>Three files were provided:
+>	fwu_ver
+>	hw_ver
+>	rootfs
+
+
+## Solve:
+- The files `fwu_ver` and `hw_ver` were text files, which contained the firmware and the hardware versions respectively.
+	- The firmware version was `3.0.5`
+	- The Hardware version was `X1`
+- The third file was a `sqaushfs` filesystem.
+	- Searching it up, I found that `sqauashfs` is a compressed, read-only Linux system designed for use in general archiving and in embedded systems.
+- I learnt that it could be mounted on my system by these commands
+```zsh
+sudo mount -o loop rootfs /mnt/squashfs_mount
+```
+- Using `ls` in the created mount, I was shown these folders.
+```zsh
+sparsh@LAPTOP-F80QI4V2 /mnt/squashfs_mount $ ls
+bin  config  dev  etc  home  image  lib  mnt  overlay  proc  run  sbin  sys  tmp  usr  var
+```
+	 This file structure resembled a linux system
+- The first place I looked at was the `home` directory, under that I could see a hidden user directory called `.41fr3d0`, or "Alfredo", in that there was a file called `s.txt` which had the contents `almost there`
+```zsh
+sparsh@LAPTOP-F80QI4V2 /mnt/squashfs_mount/home $ ls -la
+total 0
+drwxrwxr-x  3 root root  31 Oct  1  2023 .
+drwxrwxr-x 14 root root 257 Aug 10  2022 ..
+drwxr-xr-x  2 root root  28 Oct  1  2023 .41fr3d0
+sparsh@LAPTOP-F80QI4V2 /mnt/squashfs_mount/home $ cd .41fr3d0
+sparsh@LAPTOP-F80QI4V2 /mnt/squashfs_mount/home/.41fr3d0 $ ls
+s.txt
+sparsh@LAPTOP-F80QI4V2 /mnt/squashfs_mount/home/.41fr3d0 $ cat s.txt
+almost there
+```
+	There was nothing else contained in this folder
+- The next thing I wanted to do was look for file that had readable data, the only `.txt` file was the one I had already seen, so I tried searching for `markup` files like `xml`, `yaml`, `html` etc.
+- The only files that existed on the system were `.xml` files in the `etc` directory.
+```zsh
+sparsh@LAPTOP-F80QI4V2 /mnt/squashfs_mount $ find . -name "*.yaml"
+sparsh@LAPTOP-F80QI4V2 /mnt/squashfs_mount $ find . -name "*.html"
+sparsh@LAPTOP-F80QI4V2 /mnt/squashfs_mount $ find . -name "*.xml"
+./etc/config_default.xml
+./etc/config_default_hs.xml
+./etc/simplecfgservice.xml
+```
+- So I entered the `etc` directory and used `cat` on the `xml` files and grepped the content with `{*}` in an attempt to find the flag.
+```zsh
+sparsh@LAPTOP-F80QI4V2 /mnt/squashfs_mount/etc $ cat *.xml | grep "{*}"
+<Value Name="SUSER_PASSWORD" Value="HTB{N0w_Y0u_C4n_L0g1n}"/>
+```
+- And surprisingly, the flag was the super user password which I should've tried to locate before.
+
+## Flag:
+```python
+HTB{N0w_Y0u_C4n_L0g1n}
+```
+
+## Notes and Concepts Learnt:
+- I learnt what are `sqaushfs` files
+- `sqauashfs` is a compressed, read-only Linux system designed for use in general archiving and in embedded systems.
+- It could be mounted using the `mount` command
+- In CTF problems like these, the first attempt should be to locate the super user password as that is the most crucial part of a linux system.
