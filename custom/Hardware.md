@@ -231,3 +231,88 @@ HTB{N0w_Y0u_C4n_L0g1n}
 - `sqauashfs` is a compressed, read-only Linux system designed for use in general archiving and in embedded systems.
 - It could be mounted using the `mount` command
 - In CTF problems like these, the first attempt should be to locate the super user password as that is the most crucial part of a linux system.
+
+
+# 5. Red Devil
+>this is the worst football team ever(i dont even watch football lmeow)
+
+> A .cf32 file was provided
+
+## Solve:
+- Downloading the file, first I looked what a `.cf32` is, and how it works.
+	- Basically `.cf32` file is A `.cf32` file is a raw data file used in Software-Defined Radio (SDR) and radar, containing Complex Float 32-bit data, essentially un-processed In-phase (I) and Quadrature (Q) samples, often stored in little-endian format (32-bit float for each I and Q sample)
+- Searching around the net, I was able to find a very simple utility called `rtl-433` but we were supposed to do this challenge without this so I had to figure.
+- Using `inspectogram`, I was able to get a graph but it seemed to be of no use.
+	
+	![rd1.png](images/rd1.png)
+- So first I read what are the different types of digital radio frequency modulations
+	- https://resources.pcb.cadence.com/blog/2023-rf-modulation-types
+	- **In Amplitude Shift Keying (ASK)**, different amplitude levels are assigned to different binary values. The carrier wave’s instantaneous amplitude is modified based on the digital signal’s value.
+	- **In Frequency Shift Keying (FSK)**, the carrier frequency is switched between two predetermined frequencies, one representing a binary 0 and the other representing a binary 1. 
+	- **In Phase Shift Keying (PSK)**, the phase of the carrier wave is adjusted at specific intervals based on the digital signal being transmitted
+	- **[Quadrature Amplitude Modulation (QAM)](https://resources.system-analysis.cadence.com/blog/msa2021-enhance-data-rates-and-bandwidth-with-quadrature-amplitude-modulation)** is a method that involves two message signals. The amplitudes of two carrier waves are modulated (often using ASK). These two carrier waves are out of phase with each other by 90 degrees. The waves are then added together to create a single signal. Once broadcasted and received, these two signals are demodulated and then separated. QAM’s higher data rate capabilities and robustness to [noise and interference](https://resources.pcb.cadence.com/blog/2022-rf-interference-types-and-effects) make it a preferred choice for various digital communication systems.
+- And to analyze the file provided, I downloaded `Universal Radio Hacker`
+- First opening the software and inputting the file, I could already see an output in the output window,
+	
+	![rl2.png](images/rl2.png)
+- The signal waves resembled `ASK` modulation and the durations were either in the range of 890-895 or 1790-1795, approximately the double of the other
+- These durations pointed to `Manchester II` encoding
+- The changes I made were-
+	- I changed the modulation to `ASK` or Amplitude Shift Keying
+	- I changed the samples/symbol to 895
+	- And in analysis tab, I changed the decoding to `Manchester II`
+- This was the output I received-
+	
+	![rl3.png](images/rl3.png)
+
+## Alternate Solve (using rtl-433):
+- Just install`rtl-433`
+- Use this command:
+```
+rtl_433 -A signal.cf32
+```
+- This was the output I received:
+```bash
+thecosmic@fedora ~/Downloads $ rtl_433 -A signal.cf32
+rtl_433 version 25.02 (2025-02-19) inputs file rtl_tcp RTL-SDR SoapySDR
+Reading conf from "/etc/rtl_433/rtl_433.conf".
+[Input] Test mode active. Reading samples from file: signal.cf32
+Detected OOK package	@0.220228s
+Analyzing pulses...
+Total count:  185,  width: 1837.12 ms		(459281 S)
+Pulse width distribution:
+ [ 0] count:  114,  width: 3608 us [3604;3624]	( 902 S)
+ [ 1] count:   71,  width: 7204 us [7200;7208]	(1801 S)
+Gap width distribution:
+ [ 0] count:   71,  width: 7172 us [7172;7180]	(1793 S)
+ [ 1] count:  113,  width: 3576 us [3576;3584]	( 894 S)
+Pulse period distribution:
+ [ 0] count:   57,  width: 10784 us [10780;10796]	(2696 S)
+ [ 1] count:   42,  width: 14380 us [14376;14384]	(3595 S)
+ [ 2] count:   85,  width: 7188 us [7184;7196]	(1797 S)
+Pulse timing distribution:
+ [ 0] count:  227,  width: 3592 us [3576;3624]	( 898 S)
+ [ 1] count:  142,  width: 7188 us [7172;7208]	(1797 S)
+ [ 2] count:    1,  width: 72084 us [72084;72084]	(18021 S)
+Level estimates [high, low]:  15985,    488
+RSSI: -0.2 dB SNR: 30.3 dB Noise: -30.5 dB
+Frequency offsets [F1, F2]:   -5928,      0	(-22.6 kHz, +0.0 kHz)
+Guessing modulation: Manchester coding
+view at https://triq.org/pdv/#AAB1030E081C14FFFF819191919191919191919191919191918080808090818080918090808180918091808080919191808091808080918090808081908191918091809180809081809190808080819180918080808090819180809081808090819081919081809081808091908190808180809081908180919080808081809081808091908081809081919080808081908180809081809081808080808090818080808090819081808080918080809180918080809180918080809190808080819255
+Attempting demodulation... short_width: 3608, long_width: 0, reset_limit: 7184, sync_width: 0
+Use a flex decoder with -X 'n=name,m=OOK_MC_ZEROBIT,s=3608,l=0,r=7184'
+[pulse_slicer_manchester_zerobit] Analyzer Device
+codes     : {256}2aaaaaaa0c4e4854427b52465f4834636b316e365f31735f6330306c2121217d
+```
+- This ASCII code was found, `2aaaaaaa0c4e4854427b52465f4834636b316e365f31735f6330306c2121217d`
+- Decoding it, the flag was revealed
+	
+	![rl4.png](images/rl4.png)
+## Flag:
+```
+NHTB{RF_H4ck1n6_1s_c00l!!!}
+```
+
+## Notes and Concepts Learnt:
+- I learnt what is `URH` and how `URH` is used.
+- I learnt the different types of digital radio frequencies and modulation and encoding techniques
