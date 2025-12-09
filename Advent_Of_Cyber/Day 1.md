@@ -1,4 +1,4 @@
-> Basic problems on Linux CLI
+# Basic problems on Linux CLI
 
 ## Objective 1:
 **Which CLI command would you use to list a directory?**

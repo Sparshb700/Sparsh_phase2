@@ -1,4 +1,4 @@
-> 10 simple challenges were provided
+# 10 simple challenges were provided
 
 ## 1. Password Pandemonium
 Created a password that met the requirements
