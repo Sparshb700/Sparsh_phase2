@@ -4,10 +4,9 @@
 ## 1.
 **Complete the AI showcase by progressing through all of the stages. What is the flag presented to you?**
 
-Red Team --> One python script was provided to exploit vulnerability in web page.
-Blue Team --> Analyze the logs
-Software --> Identified and showcased vulnerabilities in code,
-
+Red Team --> One python script was provided to exploit vulnerability in web page.<br>
+Blue Team --> Analyze the logs<br>
+Software --> Identified and showcased vulnerabilities in code,<br>
 ### `THM{AI_MANIA}`
 
 ## 2.
